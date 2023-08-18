@@ -1,1 +1,10 @@
-matplotplusplus: https://github.com/alandefreitas/matplotplusplus
+Commands:
+	$ ls /usr/bin/python*
+	$ virtualenv my_env -p "/usr/bin/python3.8"
+
+Useful Links:
+	https://linux.how2shout.com/install-python-3-9-or-3-8-on-ubuntu-22-04-lts-jammy-jellyfish/
+	https://askubuntu.com/questions/1239829/modulenotfounderror-no-module-named-distutils-util
+
+Dependencies:
+	matplotplusplus: https://github.com/alandefreitas/matplotplusplus

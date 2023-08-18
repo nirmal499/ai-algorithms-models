@@ -3,6 +3,7 @@ import numpy as np
 import random
 import libs.utils as utils
 import pandas as pd
+import turicreate as tc
 
 data = pd.read_csv('Salary_Data.csv')
 
@@ -12,7 +13,7 @@ labels = data['Salary']
 min_value_in_features = min(features)
 max_value_in_features = max(features)
 
-figure, axis = plt.subplots(1, 2)
+figure, axis = plt.subplots(1, 3)
 
 # The root mean square error function
 def rmse(labels, predictions):
@@ -122,5 +123,86 @@ def quadratic_regression_2(features, labels, learning_rate=0.01, epochs = 1000):
 
     return a, b, c
 
-quadratic_regression_1(features, labels, learning_rate = 0.0001, epochs = 20000)
+# Polynomial is -x^2+x+15
+coefs = [15,1,-1]
+
+def polynomials(x):
+    n = len(coefs)
+    return sum([coefs[i]*x**i for i in range(n)])
+
+def create_dataset():
+    X = []
+    Y = []
+
+    for i in range(40):
+        x = random.uniform(-5,5)
+        y = polynomials(x) + random.gauss(0,2)
+        X.append(x)
+        Y.append(y)
+
+    data2 = tc.SFrame({'x':X, 'y':Y})
+
+    for i in range(2,200):
+        string = 'x^'+str(i)
+        data2[string] = data2['x'].apply(lambda x:x**i)
+
+    return data2
+
+def display_results(plt, model):
+    coefs = model.coefficients
+
+    # print("Training error (rmse):", model.evaluate(train)['rmse'])
+    # print("Testing error (rmse):", model.evaluate(test)['rmse'])
+
+    plt.scatter(train['x'], train['y'], marker='o')
+    plt.scatter(test['x'], test['y'], marker='^')
+
+    utils.draw_polynomial(plt, coefs['value'])
+
+    # print("Polynomial coefficients")
+    # print(coefs['name', 'value'])
+
+    plt.figure.savefig("mygraph.png")
+
+
+figure, axis = plt.subplots()
+
+data2 = create_dataset()
+# Our dataset is split into two datasets, the training set called train and the testing set called test.
+# A random seed is specified, so we always get the same results, although this is not necessary in practice
+train, test = data2.random_split(.8, seed=0)
+
+predictions = test['x', 'y']
+
+def polynomial_regression_1():
+    # Training a polynomial regression model with no regularization, here a penalty of 0 means we are not using regularization
+    model_no_reg = tc.linear_regression.create(train, target='y', l1_penalty=0.0, l2_penalty=0.0, verbose=False, validation_set=None)
+    display_results(axis, model_no_reg)
+    
+    predictions['No reg'] = model_no_reg.predict(test)
+    print(predictions)
+
+def polynomial_regression_2():
+    # Training a polynomial regression model with L1 regularization
+    model_L1_reg = tc.linear_regression.create(train, target='y', l1_penalty=0.1, l2_penalty=0.0, verbose=False, validation_set=None)
+    display_results(axis, model_L1_reg)
+
+    predictions['L1 reg'] = model_L1_reg.predict(test)
+    print(predictions)
+
+
+def polynomial_regression_3():
+    # Training a polynomial regression model with L2 regularization
+    model_L2_reg = tc.linear_regression.create(train, target='y', l1_penalty=0.0, l2_penalty=0.1, verbose=False, validation_set=None)
+    display_results(axis, model_L2_reg)
+
+    predictions['L2 reg'] = model_L2_reg.predict(test)
+    print(predictions)
+
+# quadratic_regression_1(features, labels, learning_rate = 0.0001, epochs = 20000)
 # quadratic_regression_2(features, labels, learning_rate = 0.0001, epochs = 20000)
+
+# polynomial_regression_1()
+# polynomial_regression_2()
+# polynomial_regression_3()
+

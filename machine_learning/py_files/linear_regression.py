@@ -3,6 +3,7 @@ import numpy as np
 import random
 import libs.utils as utils
 import pandas as pd
+import turicreate as tc
 
 data = pd.read_csv('Salary_Data.csv')
 
@@ -110,6 +111,37 @@ def linear_regression_2(features, labels, learning_rate=0.01, epochs = 1000):
 
     return a, b
 
+data2 = data = tc.SFrame('Hyderabad.csv')
 
-linear_regression_1(features, labels, learning_rate = 0.01, epochs = 10000)
+# Building a linear regression model that uses only the "Area" feature
+def linear_regression_3():
+    simple_model = tc.linear_regression.create(data, features=['Area'], target='Price')
+    b, m = simple_model.coefficients['value']
+    print("slope:", m)
+    print("y-intercept:", b)
+
+    house = tc.SFrame({'Area': [1000]})
+    print(f"The predicted price of house with area 1000 is {simple_model.predict(house)[0]}")
+
+    axis[0].scatter(data['Area'], data['Price'])
+    axis[1].scatter(data['Area'], data['Price'])
+    utils.draw_linear_line(axis[1], m, b, starting=0, ending=max(data['Area']))
+
+    plt.savefig("mygraph.png")
+
+# Building a linear regression model that uses all the features present in the csv file
+def linear_regression_4():
+    model = tc.linear_regression.create(data, target='Price')
+    # print(model.coefficients)
+    # print(model.evaluate(data))
+    house = tc.SFrame({'Area': [1000], 'No. of Bedrooms':[3]})
+    print(f"The predicted price of house with area 1000 and no.of bedrooms 3 is {model.predict(house)[0]}")
+
+    # axis[0].scatter(data['Area'], data['Price'])
+    # axis[1].scatter(data['Area'], data['Price'])
+    # utils.draw_linear_line(axis[1], m, b, starting=0, ending=max(data['Area']))
+
+# linear_regression_1(features, labels, learning_rate = 0.01, epochs = 10000)
 # linear_regression_2(features, labels, learning_rate = 0.01, epochs = 10000)
+# linear_regression_3()
+# linear_regression_4()

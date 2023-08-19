@@ -206,3 +206,21 @@ def polynomial_regression_3():
 # polynomial_regression_2()
 # polynomial_regression_3()
 
+# Notice that the model with no regularization fits the training points really well, but it’s chaotic 
+# and doesn’t fit the testing points well. The model with L1 regularization does OK with both the 
+# training and the testing sets. But the model with L2 regularization does a wonderful job with 
+# both the training and the testing sets and also seems to be the one that really captures the shape 
+# of the data
+
+# From these polynomials, we see the following:
+# 1. For the model with no regularization, all the coefficients are large. This means the 
+# polynomial is chaotic and not good for making predictions.
+
+# 2. For the model with L1 regularization, all the coefficients, except for the constant one 
+# (the first one), are tiny—almost 0. This means that for the values close to zero, the 
+# polynomial looks a lot like the horizontal line with equation predicted y = 0.57. This is better than 
+# the previous model but still not great for making predictions.
+
+# 3. For the model with L2 regularization, the coefficients get smaller as the degree grows but 
+# are still not so small. This gives us a decent polynomial for making predictions.
+

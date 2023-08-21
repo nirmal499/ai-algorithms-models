@@ -1,7 +1,12 @@
 from matplotlib import pyplot as plt
 import numpy as np
 import random
+
+import sys
+# https://favtutor.com/blogs/import-from-parent-directory-python
+sys.path.append('..')
 import libs.utils as utils
+
 import pandas as pd
 import turicreate as tc
 

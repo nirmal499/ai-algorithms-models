@@ -8,10 +8,13 @@ import sys
 sys.path.append('..')
 import libs.utils as utils
 
+import turicreate as tc
+
 features = np.array([ [1,0], [0,2], [1,1], [1,2], [1,3], [2,2], [3,2], [2,3]])
 labels = np.array([		0,     0,     0,     0,     1,     1,     1,     1 ])
 
-Logistic regression
+figure, axis = plt.subplots(1,2)
+
 def sigmoid(x):
     # Note, in the book it appears as 1/(1+np.exp(-x)). Both expressions are equivalent, but the expression
     # below behaves better with small floating point numbers.
@@ -45,7 +48,7 @@ def logistic_trick(weights, bias, features, label, learning_rate = 0.01):
     return weights, bias
 
 def logistic_regression_algorithm(features, labels, learning_rate = 0.01, epochs = 1000):
-    utils.plot_points(features, labels)
+    
     weights = [1.0 for i in range(len(features[0]))]
     bias = 0.0
     errors = []
@@ -55,12 +58,38 @@ def logistic_regression_algorithm(features, labels, learning_rate = 0.01, epochs
         # utils.draw_line(weights[0], weights[1], bias, color='grey', linewidth=0.1, linestyle='dotted')
 
         errors.append(total_log_loss(weights, bias, features, labels))
-        j = random.randint(0, len(features)-1)
+        j = random.randint(0, len(features) - 1)
         weights, bias = logistic_trick(weights, bias, features[j], labels[j])
-        
-    utils.draw_line(weights[0], weights[1], bias)
-    plt.show()
-    plt.scatter(range(epochs), errors)
-    plt.xlabel('epochs')
-    plt.ylabel('error')
+
+    utils.plot_points_1(axis[0], features, labels, 'aack', 'beep')
+    utils.draw_linear_line_1(axis[0], weights[0], weights[1], bias)
+    
+    axis[1].scatter(range(epochs), errors)
+    axis[1].set(xlabel='epochs')
+    axis[1].set(ylabel='errors')
+
+    plt.savefig('mygraph.png')
+
     return weights, bias
+
+def classifier_1():
+    datadict = {'x1': features[:,0], 'x2': features[:,1], 'y': labels}
+    data = tc.SFrame(datadict)
+
+    figure, axis = plt.subplots()
+
+    classifier = tc.logistic_classifier.create(data,
+                                           features = ['x1', 'x2'],
+                                           target = 'y',
+                                           validation_set= None)
+    # print(classifier.coefficients)
+
+    intercept, w1, w2 = classifier.coefficients["value"]
+    # print(a, " ---- ", b, " ------ ", c)
+
+    utils.draw_linear_line_1(axis, w1, w2, intercept)
+    utils.plot_points_1(axis, features, labels, 'aack', 'beep')
+    plt.savefig('mygraph.png')
+
+# logistic_regression_algorithm(features, labels)
+classifier_1()

@@ -3,4 +3,4 @@ external
 __pycache__
 my_env
 *.png
-test.*
+test*.*
